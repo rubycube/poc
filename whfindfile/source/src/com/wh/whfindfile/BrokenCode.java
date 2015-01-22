@@ -22,7 +22,7 @@ public class BrokenCode extends Exception {
 
         MISSING_F("[Missing the value for -f!]"), MISSING_P("[Missing the value for -p!]"),
         MISSING_PARAMS("[Missing -f or <directory>!]"), INVALID_DIR("[Invaild directory!]"),
-        EMPTY_DIR("[Empty directory!]");
+        EMPTY_DIR("[Empty directory!]"), EMPTY_RES("[No results found!]");
 
         private String code = null;
 

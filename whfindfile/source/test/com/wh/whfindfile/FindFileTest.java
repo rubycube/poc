@@ -53,9 +53,6 @@ public class FindFileTest {
         FindFile instance = new FindFile();
         List<String> files = new ArrayList<>();
         files = instance.searchDirectory(searchDirectory, fileName, pattern, files);
-        for (String file : files) {
-            System.out.println("MATCH:" + file);
-        }
         assertEquals(files.size(), 3);
     }
 

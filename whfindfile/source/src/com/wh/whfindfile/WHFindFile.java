@@ -18,10 +18,27 @@ public class WHFindFile {
 
     /**
      * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        try {
+            List<String> files = doExecute(args);
+            for (String file : files) {
+                System.out.println(file);
+            }
+        } catch (BrokenCode bcEx) {
+            //Mask the exception do nothing!
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * @param args the command line arguments
+     * @return
      * @throws java.io.IOException
      * @throws com.wh.whfindfile.BrokenCode
      */
-    public static void main(String[] args) throws IOException, BrokenCode {
+    public static List<String> doExecute(String[] args) throws BrokenCode, IOException {
         try {
             String rootDirectory = null;
             String fileName = null;
@@ -33,6 +50,7 @@ public class WHFindFile {
                     case "-f":
                         if (args.length > i + 1 && isValidFileName(args[i + 1])) {
                             fileName = args[i + 1];
+                            i++;
                         } else {
                             throw new BrokenCode(BrokenCode.ErrorCodes.MISSING_F.getCode());
                         }
@@ -40,6 +58,7 @@ public class WHFindFile {
                     case "-p":
                         if (args.length > i + 1 && isValidPattern(args[i + 1])) {
                             pattern = args[i + 1];
+                            i++;
                         } else {
                             throw new BrokenCode(BrokenCode.ErrorCodes.MISSING_P.getCode());
                         }
@@ -51,8 +70,10 @@ public class WHFindFile {
             }
             List<String> files = new ArrayList<>();
             files = doFind(fileName, rootDirectory, pattern, files);
-            for (String file : files) {
-                System.out.println(file);
+            if (files.isEmpty()) {
+                throw new BrokenCode(BrokenCode.ErrorCodes.EMPTY_RES.getCode());
+            } else {
+                return files;
             }
         } catch (BrokenCode bcEx) {
             System.out.println(bcEx.getErrorCode());
