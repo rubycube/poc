@@ -84,7 +84,7 @@ public class PublishTileServiceTest {
             publishTileService.saveTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.EMPTY_SCHEDULE.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 
@@ -108,7 +108,7 @@ public class PublishTileServiceTest {
             publishTileService.saveTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.EARLY_POSITION.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 
@@ -130,7 +130,7 @@ public class PublishTileServiceTest {
             publishTileService.saveTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.POSITION_UNAVAILABLE.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 

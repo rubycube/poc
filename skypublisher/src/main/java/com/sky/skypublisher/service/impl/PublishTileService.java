@@ -30,20 +30,28 @@ public class PublishTileService implements IPublishTileService {
 
     @Override
     public boolean saveTile(Tile tile) throws BrokenCode {
+        //Get today's tiles based on client id and title position
         List<Tile> tiles = getTodaysTilesByClientAndPosition(tile);
         if (null == tiles || tiles.isEmpty()) {
+            // There should be atleast one title else ERROR - EMPTY_SCHEDULE
             throw new BrokenCode(ProjectConstants.ErrorCodes.EMPTY_SCHEDULE.getCode());
-        }
-        if (tiles.size() > 1) {
+        } else if (tiles.size() > 1) {
+            //Sort tile on "start timestamp" - descending order to ease the processing
             sortTiles(tiles);
         }
+        //Check if there is no scheduled tile after the current tile.
         if (checkPostTileExists(tiles, tile)) {
             throw new BrokenCode(ProjectConstants.ErrorCodes.EARLY_POSITION.getCode());
         }
+        //
         Tile lastTile = getLastTile(tiles, tile);
+        //Set the last saved tile end date to current tile's start date time
         setTileEndDate(lastTile, tile.getStartDateTime());
+        //Set the current tile end date to future date
         setTileEndDate(tile, getEndDate());
+        //Save last saved tile.
         createOrUpdateTile(lastTile);
+        //Save current tile.
         createOrUpdateTile(tile);
         return true;
     }
@@ -51,10 +59,13 @@ public class PublishTileService implements IPublishTileService {
     private Tile getLastTile(List<Tile> tiles, Tile tile) throws BrokenCode {
         Tile lastTile = null;
         for (Tile tileObj : tiles) {
+            //The sorted saved tiles will always have the latest saved tile as the first element
+            //There should be no saved tile with the same start date as the current tile
             if (!tile.getStartDateTime().after(tileObj.getStartDateTime())) {
                 throw new BrokenCode(ProjectConstants.ErrorCodes.POSITION_UNAVAILABLE.getCode());
             } else {
                 lastTile = tileObj;
+                //Since the saved tile list is sorted, the first element is always the last saved tile. Break!
                 break;
             }
         }
@@ -86,6 +97,8 @@ public class PublishTileService implements IPublishTileService {
     }
 
     private boolean checkPostTileExists(List<Tile> tiles, Tile tile) {
+        //The sorted saved tiles will always have the latest saved tile as the first element.
+        //The current tile should have a startdate after the latest saved tile.
         return tile.getStartDateTime().before(tiles.get(0).getStartDateTime());
     }
 

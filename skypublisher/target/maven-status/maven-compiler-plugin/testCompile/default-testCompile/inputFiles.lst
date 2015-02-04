@@ -1,7 +1,9 @@
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\service\impl\TileValidatorServiceTest.java
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\controller\PublisherControllerTest.java
+C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\service\ITileValidatorServiceTest.java
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\utils\ProjectConstantsTest.java
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\model\ResultTest.java
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\controller\PublishControllerMvcTest.java
+C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\service\IPublishTileServiceTest.java
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\dao\impl\PublishTileDaoTest.java
 C:\Users\computer\Documents\skypublisher\src\test\java\com\sky\skypublisher\service\impl\PublishTileServiceTest.java

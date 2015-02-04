@@ -82,7 +82,7 @@ public class TileValidatorServiceTest {
             instance.validateTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.INVALID_LABEL.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 
@@ -99,10 +99,10 @@ public class TileValidatorServiceTest {
             instance.validateTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.INVALID_LABEL.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
-    
+
     /**
      * Test of validateTile method, of class TileValidatorService.
      *
@@ -116,9 +116,9 @@ public class TileValidatorServiceTest {
             instance.validateTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.INVALID_LABEL.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
-    }    
+    }
 
     /**
      * Test of validateTile method, of class TileValidatorService.
@@ -136,7 +136,7 @@ public class TileValidatorServiceTest {
             instance.validateTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.INVALID_LABEL.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 
@@ -169,7 +169,7 @@ public class TileValidatorServiceTest {
             instance.validateTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.INVALID_POSITION.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 
@@ -186,7 +186,7 @@ public class TileValidatorServiceTest {
             instance.validateTile(tile);
         } catch (BrokenCode ex) {
             assertEquals(ProjectConstants.ErrorCodes.INVALID_POSITION.getCode(), ex.getError());
-            throw new BrokenCode();
+            throw ex;
         }
     }
 

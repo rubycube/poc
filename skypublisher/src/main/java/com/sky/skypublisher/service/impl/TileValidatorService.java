@@ -21,17 +21,18 @@ public class TileValidatorService implements ITileValidatorService {
     public boolean validateTile(Tile tile) throws BrokenCode {
         if (!validateLabel(tile.getLabel())) {
             throw new BrokenCode(ProjectConstants.ErrorCodes.INVALID_LABEL.getCode());
-        }
-        if (!validatePosition(tile.getPosition())) {
+        } else if (!validatePosition(tile.getPosition())) {
             throw new BrokenCode(ProjectConstants.ErrorCodes.INVALID_POSITION.getCode());
         }
         return true;
     }
 
+    //Null and allowed characters and number check for label
     private boolean validateLabel(String label) {
         return null != label && label.trim().matches("^[a-zA-Z0-9 ]{1,30}$");
     }
 
+    //Position should be great than 0 and less than 9 check
     private boolean validatePosition(int position) {
         return position > 0 && position < 9;
     }

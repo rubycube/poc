@@ -38,36 +38,34 @@ public class PublisherController {
 
     @Autowired
     private IPublishTileService publishTileService = null;
-   
+
+    //http://localhost:8080/skypublisher/admin/tile/<clientid>?label=<label>&position=<position>&start=<yyyy-MM-dd HH:mm:ss>
     @RequestMapping(value = "/{client_id}", method = RequestMethod.PUT)
     public @ResponseBody
     ResponseEntity<Result> saveTile(@PathVariable("client_id") int clientId,
             @RequestParam("label") String label, @RequestParam("position") int position,
-            @RequestParam("start") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date fromDate) throws Exception {
+            @RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date fromDate) throws Exception {
         Tile tile = new Tile(label, 3, clientId, fromDate);
+        //Validate the input
         tileValidatorService.validateTile(tile);
+        //Save the tile
         publishTileService.saveTile(tile);
-        Result result = new Result(ProjectConstants.SUCCESS);
-        HttpStatus status = HttpStatus.OK;
-        ResponseEntity<Result> response = new ResponseEntity<>(result, status);
-        return response;
+        return new ResponseEntity<>(new Result(ProjectConstants.SUCCESS), HttpStatus.OK);
     }
 
+    // Exception handling of errors thrown from service layer
     @ExceptionHandler(BrokenCode.class)
     public ResponseEntity<ErrorResult> handleBrokenCode(BrokenCode ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorResult result = new ErrorResult(ProjectConstants.ERROR, ex.getError());
-        ResponseEntity<ErrorResult> response = new ResponseEntity<>(result, status);
-        return response;
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
-    
+
+    //Heartbeat check default GET method
     @RequestMapping(method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<Result> heartBeat() throws Exception {
         Result result = new Result("Try PUT http://localhost:8080/skypublisher/admin/tile/<clientid>?label=<label>&position=<position>&start=<yyyy-MM-dd HH:mm:ss>");
-        HttpStatus status = HttpStatus.OK;
-        ResponseEntity<Result> response = new ResponseEntity<>(result, status);
-        return response;
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     public void setTileValidatorService(ITileValidatorService tileValidatorService) {
