@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+
+	<reference id="httpService" interface="org.osgi.service.http.HttpService" />
+	<bean id="camelServlet"
+		class="org.apache.camel.component.servlet.CamelHttpTransportServlet" />
+	<bean id="registerCamel"
+		class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
+		init-method="register" destroy-method="unregister">
+		<property name="alias" value="/mysearch" />
+		<property name="httpService" ref="httpService" />
+		<property name="servlet" ref="camelServlet" />
+		<property name="servletName" value="CamelServlet" />
+	</bean>
+
+	<camelContext id="context-cebf1d06-8c67-46d3-ad0f-58ece3ff86a1"
+		xmlns="http://camel.apache.org/schema/blueprint">
+		<restConfiguration component="servlet" host="localhost"
+			port="9999" contextPath="/mysearch" bindingMode="json">
+			<dataFormatProperty key="prettyPrint" value="true" />
+		</restConfiguration>
+		<rest>
+			<get uri="/usersearch/{id}">
+				<to uri="direct:name" />
+			</get>
+		</rest>
+		<route>
+			<from uri="direct:name" />
+			<log message="${headers.id}" id="log1" />
+			<removeHeader headerName="CamelHttpPath" id="removeHeader1" />
+			<recipientList id="recipientList1">
+				<simple>http4://jsonplaceholder.typicode.com/posts?userId=${headers.id}&amp;bridgeEndpoint=true</simple>
+			</recipientList>
+			<unmarshal id="unmarshal1">
+				<json library="Jackson" useList="true" />
+			</unmarshal>
+			<bean beanType="com.demo.mysearch.processor.FlightParser" />
+			<recipientList id="recipientList2">
+				<simple>http4://jsonplaceholder.typicode.com/users/${headers.id}?bridgeEndpoint=true</simple>
+			</recipientList>
+			<unmarshal>
+				<json library="Jackson" useList="false" />
+			</unmarshal>
+			<setBody>
+				<simple>${body}</simple>
+			</setBody>
+			<bean method="parseResult(${body},${headers.result1})"
+				beanType="com.demo.mysearch.processor.FlightParser"
+				multiParameterArray="false" />
+		</route>
+	</camelContext>
+
+</blueprint>
