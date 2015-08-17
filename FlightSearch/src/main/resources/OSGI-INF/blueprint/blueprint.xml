@@ -12,47 +12,55 @@
 	<bean id="registerCamel"
 		class="org.apache.camel.component.servlet.osgi.OsgiServletRegisterer"
 		init-method="register" destroy-method="unregister">
-		<property name="alias" value="/mysearch" />
+		<property name="alias" value="/jfuse" />
 		<property name="httpService" ref="httpService" />
 		<property name="servlet" ref="camelServlet" />
 		<property name="servletName" value="CamelServlet" />
 	</bean>
 
-	<camelContext id="context-cebf1d06-8c67-46d3-ad0f-58ece3ff86a1"
-		xmlns="http://camel.apache.org/schema/blueprint">
-		<restConfiguration component="servlet" host="localhost"
-			port="9999" contextPath="/mysearch" bindingMode="json">
-			<dataFormatProperty key="prettyPrint" value="true" />
-		</restConfiguration>
-		<rest>
-			<get uri="/usersearch/{id}">
-				<to uri="direct:name" />
-			</get>
-		</rest>
-		<route>
-			<from uri="direct:name" />
-			<log message="${headers.id}" id="log1" />
-			<removeHeader headerName="CamelHttpPath" id="removeHeader1" />
-			<recipientList id="recipientList1">
-				<simple>http4://jsonplaceholder.typicode.com/posts?userId=${headers.id}&amp;bridgeEndpoint=true</simple>
-			</recipientList>
-			<unmarshal id="unmarshal1">
-				<json library="Jackson" useList="true" />
-			</unmarshal>
-			<bean beanType="com.demo.mysearch.processor.FlightParser" />
-			<recipientList id="recipientList2">
-				<simple>http4://jsonplaceholder.typicode.com/users/${headers.id}?bridgeEndpoint=true</simple>
-			</recipientList>
-			<unmarshal>
-				<json library="Jackson" useList="false" />
-			</unmarshal>
-			<setBody>
-				<simple>${body}</simple>
-			</setBody>
-			<bean method="parseResult(${body},${headers.result1})"
-				beanType="com.demo.mysearch.processor.FlightParser"
-				multiParameterArray="false" />
-		</route>
-	</camelContext>
+	<camelContext id="context-cebf1d06-8c67-46d3-ad0f-58ece3ff86a1" xmlns="http://camel.apache.org/schema/blueprint">
+	<propertyPlaceholder location="classpath:conf.properties" id="properties"/>
+  <restConfiguration component="servlet" host="localhost" port="9999" contextPath="/jfuse" bindingMode="json">
+    <dataFormatProperty key="prettyPrint" value="true"/>
+  </restConfiguration>
+  <rest>
+    <get uri="/productsearch/{prod_id}">
+      <to uri="direct:name"/>
+    </get>
+  </rest>
+  <route>
+    <from uri="direct:name"/>
+    <doTry>
+      <log message="${headers.prod_id}" id="log1"/>
+      <removeHeader headerName="CamelHttpPath" id="removeHeader1"/>
+      <recipientList id="recipientList1">
+        <simple>http4://ejdemo-mteu.rhcloud.com/businesstier/oauth/token?client_id={{client_id}}&amp;client_secret={{client_secret}}&amp;username={{username}}&amp;password={{password}}&amp;grant_type={{grant_type}}&amp;bridgeEndpoint=true</simple>
+      </recipientList>
+      <unmarshal id="unmarshal1">
+        <json library="Jackson" useList="false"/>
+      </unmarshal>
+      <log message="${body.[access_token]}"/>
+      <setHeader headerName="access_token">
+        <simple>${body.[access_token]}</simple>
+      </setHeader>
+      <log message="http://ejdemo-mteu.rhcloud.com/businesstier/products/${headers.prod_id}?access_token=${headers.access_token}&amp;bridgeEndpoint=true"/>
+      <bean beanType="com.demo.flightsearch.processor.FlightParser"/>
+      <recipientList id="recipientList2">
+        <simple>http4://ejdemo-mteu.rhcloud.com/businesstier/products/${headers.prod_id}?access_token=${headers.access_token}&amp;bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+      </recipientList>
+      <unmarshal>
+        <json library="Jackson"/>
+      </unmarshal>
+      <log message="${body.[productdetails]}"/>
+      <bean method="parseResult(${body})" beanType="com.demo.flightsearch.processor.FlightParser" multiParameterArray="false"/>
+      <doCatch>
+        <exception>java.lang.Exception</exception>
+        <setBody>
+          <constant>Sorry, something went wrong! Try product code 1234 or 5678.</constant>
+        </setBody>
+      </doCatch>
+    </doTry>
+  </route>
+</camelContext>
 
 </blueprint>
